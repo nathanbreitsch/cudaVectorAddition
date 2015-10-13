@@ -12,7 +12,7 @@
 // 3. if i pass a device memory location into *result for cudaAdd, does it store the result on the card? (could probs google this, but... todo: try it out)
 
 
-__global__ void addKernel(double *x1, double*x2, double *result, int length){
+__global__ void addKernel(float *x1, float*x2, float *result, int length){
 	//get unique index on which to compute
 	int index = threadIdx.x + blockIdx.x * blockDim.x;
 	
@@ -22,16 +22,16 @@ __global__ void addKernel(double *x1, double*x2, double *result, int length){
 	}
 }
 
-void cudaAdd(const double *x1, const double *x2, double *result, int length){
+void cudaAdd(const float *x1, const float *x2, float *result, int length){
 	//set block size, i.e. number of threads in each block
 	int block_size = 512;
 	//set grid size, i.e. number of blocks
 	int grid_size = length / block_size + 1;
 	
 	//allocate some memory on the device
-	double *d_x1, *d_x2, *d_result;
+	float *d_x1, *d_x2, *d_result;
 	
-	size_t num_bytes = length*sizeof(double);
+	size_t num_bytes = length*sizeof(float);
 	cudaMalloc(&d_x1, num_bytes);
 	cudaMalloc(&d_x2, num_bytes);
 	cudaMalloc(&d_result, num_bytes);
@@ -53,7 +53,7 @@ void cudaAdd(const double *x1, const double *x2, double *result, int length){
 	
 }
 
-void serialAdd(const double *x1, const double *x2, double *result, int length){
+void serialAdd(const float *x1, const float *x2, float *result, int length){
 	for(int i = 0; i < length; i++){
 		result[i] = x1[i] + x2[i];
 	}
@@ -64,10 +64,10 @@ int main(){
 	//create and initialize vectors
 	
 	int size = 60;
-	int num_bytes = size * sizeof(double);
-	double *x1 = (double*) malloc(num_bytes);
-	double *x2 = (double*) malloc(num_bytes);
-	double *result = (double*) malloc(num_bytes);
+	int num_bytes = size * sizeof(float);
+	float *x1 = (float*) malloc(num_bytes);
+	float *x2 = (float*) malloc(num_bytes);
+	float *result = (float*) malloc(num_bytes);
 	for(int i = 0; i < size; i++){
 		x1[i] = i;
 		x2[i] = i*i;
